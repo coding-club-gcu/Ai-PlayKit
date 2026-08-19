@@ -113,6 +113,7 @@ python main.py
 - **Developed by**: Codénix Coding Club
 - **Organisation**: Girijananda Chowdhury University
 - **Authors**: Akash Bora
+- **Version**: 1.0.0
 
 ---
 
