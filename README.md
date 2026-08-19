@@ -19,6 +19,8 @@
 
 **AI PlayKit Hub** is a plug-and-play desktop application engineered for students and educators. It provides a central, beautifully styled interface powered by **CustomTkinter** that lets you run various fun Ai projects with **zero setup hassle**.
 
+<img width="1917" height="1033" alt="image" src="https://github.com/user-attachments/assets/4b1a3473-7892-44c4-b3d6-1137e935fb06" />
+
 ---
 
 ## 🛠️ Technical AI Modules Included
