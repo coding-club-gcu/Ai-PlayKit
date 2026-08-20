@@ -309,7 +309,7 @@ class AIPlayKitApp(ctk.CTk):
         self.minsize(850, 550)
         self.configure(fg_color=("#EFF1F5", "#11111B"))
         self.bind("<1>", lambda event: event.widget.focus_set() if hasattr(event.widget, "focus_set") else None)
-        self.VERSION = "1.0.0"
+        self.VERSION = "1.1.0"
 
         self.projects = []
         self.active_project_frame = None
