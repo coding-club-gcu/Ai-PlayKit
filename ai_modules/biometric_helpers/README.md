@@ -1,14 +1,9 @@
-# 🔐 FaceNet Biometric Register & Matcher
-
-<p align="center">
-  <b>A state-of-the-art Deep Learning Facial Recognition & Biometric Authentication Engine powered by FaceNet (InceptionResnetV1), MTCNN, and PyTorch.</b>
-</p>
+# 🔐 FaceNet Biometric 
 
 <p align="center">
   <img src="https://img.shields.io/badge/PyTorch-2.2+-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch 2.2+" />
   <img src="https://img.shields.io/badge/FaceNet-InceptionResnetV1-1E66F5?style=for-the-badge" alt="FaceNet" />
   <img src="https://img.shields.io/badge/Vision-MTCNN%20%7C%20OpenCV-00599C?style=for-the-badge&logo=opencv&logoColor=white" alt="MTCNN & OpenCV" />
-  <img src="https://img.shields.io/badge/GUI-CustomTkinter-40A02B?style=for-the-badge" alt="CustomTkinter" />
 </p>
 
 ---
@@ -161,6 +156,5 @@ if emb1 is not None and emb2 is not None:
 
 ## 📜 Credits
 
-- **FaceNet Paper**: *FaceNet: A Unified Embedding for Face Recognition and Clustering* (Schroff et al., Google 2015)
+- **FaceNet Paper**: *FaceNet: A Unified Embedding for Face Recognition and Clustering*
 - **FaceNet PyTorch Implementation**: `facenet-pytorch` by Tim Esler
-- **Framework**: Developed for **Codénix AI PlayKit Hub**
