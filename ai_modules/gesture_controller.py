@@ -7,7 +7,7 @@ import customtkinter as ctk
 PROJECT_INFO = {
     "id": "gesture_controller",
     "title": "AI Webcam Gesture Controller",
-    "description": "Track hands live with MediaPipe, detect gestures, and plant/erase blooming flowers in an interactive garden canvas!",
+    "description": "Track hands live with MediaPipe, plant/erase blooming flowers in a garden, or draw & erase with a light blue pen!",
     "icon": "🖐️",
     "category": "Vision & Perception",
     "required_packages": ["mediapipe", "cv2", "PIL"],
@@ -15,7 +15,7 @@ PROJECT_INFO = {
     "guide": """# 🖐️ AI Webcam Gesture Controller Guide
 
 ### Overview
-This project uses **MediaPipe** to detect 21 3D hand landmarks in real-time. You can track hand skeletons and play in an **Interactive Flower Garden** where hand gestures plant persistent flowers or erase them!
+This project uses **MediaPipe** to detect 21 3D hand landmarks in real-time. You can track hand skeletons, plant flowers in an **Interactive Flower Garden**, or draw with a **Light Blue Pen** using hand gestures!
 
 ---
 
@@ -28,10 +28,11 @@ pip install mediapipe opencv-python pillow
 ---
 
 ### Step 2: Hand Gestures Legend
-- 🌸 **Pinch (Thumb + Index)**: Plant / Spawn a blooming flower on screen!
-- ✌️ **Peace**: Spawn flying flapping **Butterflies** 🦋!
-- 🖐️ **Open Palm** / ✊ **Fist**: Eraser gesture! Move your open palm or fist over flowers to erase them.
-- 👉 **Point**: Pointing gesture.
+- 🌸 **Pinch (Thumb + Index)**: Plant blooming flowers!
+- ✌️ **Peace**: Spawn flying **Butterflies** 🦋!
+- 👉 **Point Index**: Draw on screen with a **Light Blue Pen** ✏️!
+- 🖐️ **Open Palm**: Eraser gesture! Move open palm to erase flowers or drawing strokes.
+
 
 ---
 
@@ -85,6 +86,7 @@ class GestureControllerUI(ctk.CTkFrame):
         self.is_running = False
         self.detector = None
         self.garden = None
+        self.draw_engine = None
 
         self.current_ctk_img = None
 
@@ -178,7 +180,7 @@ class GestureControllerUI(ctk.CTkFrame):
 
         self.mode_dropdown = ctk.CTkOptionMenu(
             control_panel,
-            values=["🌸 Interactive Flower Garden", "✋ 3D Hand Skeleton & Gestures"],
+            values=["🌸 Interactive Flower Garden", "🎨 Draw & Erase (Light Blue Pen)", "✋ 3D Hand Skeleton & Gestures"],
             fg_color=("#1E66F5", "#89B4FA"),
             text_color=("#FFFFFF", "#11111B")
         )
@@ -205,7 +207,7 @@ class GestureControllerUI(ctk.CTkFrame):
         # Clear Canvas Button
         clear_btn = ctk.CTkButton(
             control_panel,
-            text="🧹 Clear Garden Canvas",
+            text="🧹 Clear Canvas",
             fg_color=("#DCE0E8", "#313244"),
             hover_color=("#BCC0CC", "#45475A"),
             text_color=("#4C4F69", "#CDD6F4"),
@@ -241,7 +243,7 @@ class GestureControllerUI(ctk.CTkFrame):
 
         self.gesture_summary_lbl = ctk.CTkLabel(
             status_box,
-            text="Webcam is off.\n\n🌸 Pinch → Plant Flower\n✌️ Peace → Spawn Butterflies 🦋\n🖐️/✊ → Erase",
+            text="Webcam is off.\n\n🌸 Garden: Pinch → Flower, Peace → Butterfly\n🎨 Draw: Point 👉 → Light Blue Pen\n🖐️ Erase: Open Palm",
             font=ctk.CTkFont(size=11),
             text_color=("#5C5F77", "#A6ADC8"),
             justify="left",
@@ -270,6 +272,8 @@ class GestureControllerUI(ctk.CTkFrame):
     def clear_canvas(self):
         if self.garden:
             self.garden.clear()
+        if self.draw_engine:
+            self.draw_engine.clear()
 
     def toggle_webcam(self):
         if self.is_running:
@@ -337,6 +341,7 @@ class GestureControllerUI(ctk.CTkFrame):
             from PIL import Image
             from ai_modules.gesture_helpers.hand_detector import HandDetector
             from ai_modules.gesture_helpers.flower_garden import FlowerGardenEngine
+            from ai_modules.gesture_helpers.draw_canvas import DrawCanvasEngine
 
             if self.detector is None:
                 self.after(0, lambda: self.gesture_summary_lbl.configure(text="⏳ Loading MediaPipe Model..."))
@@ -344,6 +349,9 @@ class GestureControllerUI(ctk.CTkFrame):
 
             if self.garden is None:
                 self.garden = FlowerGardenEngine()
+
+            if self.draw_engine is None:
+                self.draw_engine = DrawCanvasEngine()
 
             self.cap = cv2.VideoCapture(0)
             if not self.cap.isOpened():
@@ -367,14 +375,18 @@ class GestureControllerUI(ctk.CTkFrame):
                 show_skeleton = self.show_skeleton_var.get()
 
                 is_garden_mode = "Garden" in selected_mode
+                is_draw_mode = "Draw" in selected_mode
 
                 # Update garden logic if in garden mode
                 if is_garden_mode:
                     self.garden.process_hand_gestures(hands_data, selected_flower)
                     self.garden.draw(frame, hands_data)
+                elif is_draw_mode:
+                    self.draw_engine.process_hand_gestures(hands_data, frame.shape)
+                    self.draw_engine.draw(frame, hands_data)
 
                 # Draw Hand Skeleton overlay if enabled or in pure skeleton mode
-                if show_skeleton or not is_garden_mode:
+                if show_skeleton or (not is_garden_mode and not is_draw_mode):
                     for hand in hands_data:
                         self.detector.draw_skeleton(frame, hand, draw_labels=True)
 
@@ -387,11 +399,16 @@ class GestureControllerUI(ctk.CTkFrame):
                         if g == 'PINCH':
                             act = "🌸 Planting Flower" if is_garden_mode else "🤏 Pinching"
                         elif g in ['OPEN_PALM', 'FIST']:
-                            act = f"{'🖐️' if g=='OPEN_PALM' else '✊'} Erasing Flowers" if is_garden_mode else ("🖐️ Open Palm" if g=='OPEN_PALM' else "✊ Fist Closed")
+                            if is_garden_mode:
+                                act = f"{'🖐️' if g=='OPEN_PALM' else '✊'} Erasing Flowers"
+                            elif is_draw_mode:
+                                act = "🖐️ Erasing Canvas" if g=='OPEN_PALM' else "✊ Fist Closed"
+                            else:
+                                act = f"{'🖐️' if g=='OPEN_PALM' else '✊'} Open/Closed"
                         elif g == 'PEACE':
                             act = "🦋 Spawning Butterflies" if is_garden_mode else "✌️ Peace Sign"
                         elif g == 'POINT':
-                            act = "👉 Pointing"
+                            act = "✏️ Drawing (Light Blue)" if is_draw_mode else "👉 Pointing"
                         lines.append(f"• {hand['handedness']}: {g} ({act})")
                     summary_str = "\n".join(lines)
                 else:
