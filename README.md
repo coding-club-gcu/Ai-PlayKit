@@ -80,6 +80,10 @@ AI PlayKit comes pre-packed with **10 feature-rich AI applications**:
 - **Key Features**: Multi-format parser (PDF, DOCX, TXT, MD), custom compression slider, sentiment mood gauge, top keyword extractor, offline TTS read aloud.
 - **Dependencies**: `pip install pypdf python-docx nltk textblob pillow`
 
+### 11. 🔐 FaceNet Biometric Matcher (`ai_modules/facenet_biometric.py`)
+- **Description**: Deep-learning facial recognition & biometric authentication engine powered by FaceNet (InceptionResnetV1) PyTorch & MTCNN face alignment.
+- **Key Features**: Live webcam face matching HUD with MTCNN 5-point landmark visualizer, 512-D neural embedding extractor, Enrollee Profile Registration with face crop avatars, 1-to-1 face verification tool with Cosine similarity % and L2 distance metrics, and searchable biometric database registry.
+- **Dependencies**: `pip install facenet-pytorch torch torchvision opencv-python pillow`
 ---
 
 ## 🚀 Quick Start
