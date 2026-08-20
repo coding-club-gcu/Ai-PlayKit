@@ -466,7 +466,7 @@ class AIPlayKitApp(ctk.CTk):
             "About",
             "🎓 Codénix AI PlayKit Hub\n\n"
             "Developed by: Codénix Coding Club\n"
-            "Organisation: Girijananda Chowdhury University"
+            "Organisation: Girijananda Chowdhury University\n"
             "Authors: Akash Bora\n\n"
             "An interactive suite of AI applications designed for learning and exploration.\n"
             "Version: "+self.VERSION
